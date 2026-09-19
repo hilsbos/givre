@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta http-equiv="Cache-Control" content="no-cache" />
   <title>Givre — parametric toy configurator</title>
   <style>
     :root {
@@ -14,22 +15,18 @@
       --muted: #b5a8b0;
       --accent: #e08a6a;
       --accent-2: #c45c7a;
-      --ok: #7dba8a;
-      --warn: #e0b15a;
-      --bad: #e06a6a;
-      --ice: #7ec8e8;
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font: 15px/1.45 "Segoe UI", system-ui, sans-serif; }
     body { display: grid; grid-template-columns: minmax(320px, 420px) 1fr; }
     @media (max-width: 900px) {
-      body { grid-template-columns: 1fr; grid-template-rows: auto 55vh; }
+      body { grid-template-columns: 1fr; grid-template-rows: minmax(42vh, auto) 1fr; }
     }
     header.app { padding: 22px 22px 8px; }
     header.app h1 { margin: 0; font-size: 22px; letter-spacing: 0.04em; font-weight: 650; }
     header.app p { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
     .panel { background: var(--bg-2); border-right: 1px solid var(--line); overflow: auto; height: 100vh; }
-    @media (max-width: 900px) { .panel { height: auto; max-height: 50vh; border-right: 0; border-bottom: 1px solid var(--line); } }
+    @media (max-width: 900px) { .panel { height: auto; max-height: 48vh; border-right: 0; border-bottom: 1px solid var(--line); } }
     .steps { display: flex; gap: 6px; padding: 0 22px 12px; }
     .step-dot { flex: 1; height: 4px; border-radius: 4px; background: #3a323c; }
     .step-dot.on { background: var(--accent); }
@@ -50,15 +47,13 @@
     label.row { display: grid; grid-template-columns: 1fr auto; gap: 8px; font-size: 13px; color: var(--muted); margin-top: 12px; }
     input[type=range] { width: 100%; accent-color: var(--accent); }
     .presets { display: flex; gap: 8px; flex-wrap: wrap; }
-    button, .btn { appearance: none; border: 0; border-radius: 10px; padding: 10px 14px; cursor: pointer; font-weight: 600; }
+    button { appearance: none; border: 0; border-radius: 10px; padding: 10px 14px; cursor: pointer; font-weight: 600; }
     .preset { background: var(--panel); color: var(--text); border: 1px solid var(--line); }
     .preset.on { border-color: var(--accent); color: var(--accent); }
     .nav { display: flex; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
     .primary { background: linear-gradient(180deg, #e49a7a, #c45c7a); color: #1a1012; }
     .ghost { background: transparent; color: var(--text); border: 1px solid var(--line); }
-    .warnbox, .okbox, .badbox {
-      border-radius: 12px; padding: 12px 14px; font-size: 13px; margin-top: 14px; line-height: 1.4;
-    }
+    .warnbox, .okbox, .badbox { border-radius: 12px; padding: 12px 14px; font-size: 13px; margin-top: 14px; line-height: 1.4; }
     .warnbox { background: #2a2318; border: 1px solid #5a4a28; color: #f0d9a8; }
     .okbox { background: #17241c; border: 1px solid #2f5a3c; color: #c8e6ce; }
     .badbox { background: #2a1718; border: 1px solid #5a2a2c; color: #f0c0c0; }
@@ -66,7 +61,7 @@
     .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
     .stat b { display: block; font-size: 16px; word-break: break-word; }
     .stat span { color: var(--muted); font-size: 12px; }
-    #view { position: relative; background:
+    #view { position: relative; min-height: 40vh; background:
       radial-gradient(1200px 500px at 70% 10%, #2a1c24 0%, transparent 50%),
       radial-gradient(circle at 50% 80%, #1a1418, #0c0a0c); }
     canvas { display: block; width: 100%; height: 100%; }
@@ -92,7 +87,7 @@
       <div class="step-dot" id="d2"></div>
       <div class="step-dot" id="d3"></div>
     </div>
-    <div class="card" id="wizard"></div>
+    <div class="card" id="wizard"><p style="color:#b5a8b0;font-size:13px">Loading configurator…</p></div>
   </aside>
   <section id="view">
     <div class="hud">
@@ -104,12 +99,21 @@
   <script type="importmap">
   {
     "imports": {
-      "three": "https://unpkg.com/three@0.160.1/build/three.module.js",
-      "three/addons/": "https://unpkg.com/three@0.160.1/examples/jsm/"
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/"
     }
   }
   </script>
-  <script type="module" src="app.js"></script>
-
+  <script type="module" src="./app.js?v=3"></script>
+  <script>
+    window.addEventListener("error", function (e) {
+      var w = document.getElementById("wizard");
+      if (w && w.textContent.indexOf("Loading") !== -1) {
+        w.innerHTML = "<h2>Could not start</h2><p style='color:#f0c0c0;font-size:13px'>" +
+          (e.message || "script error") +
+          ". Hard-refresh, or open this page on desktop Safari/Chrome.</p>";
+      }
+    });
+  </script>
 </body>
 </html>
