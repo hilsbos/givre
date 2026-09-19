@@ -1,1 +1,115 @@
-PLACEHOLDER_WILL_FAIL_IF_NOT_REPLACED
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Givre — parametric toy configurator</title>
+  <style>
+    :root {
+      --bg: #121014;
+      --bg-2: #1b171c;
+      --panel: #221c24;
+      --line: #3a323c;
+      --text: #f4ece8;
+      --muted: #b5a8b0;
+      --accent: #e08a6a;
+      --accent-2: #c45c7a;
+      --ok: #7dba8a;
+      --warn: #e0b15a;
+      --bad: #e06a6a;
+      --ice: #7ec8e8;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font: 15px/1.45 "Segoe UI", system-ui, sans-serif; }
+    body { display: grid; grid-template-columns: minmax(320px, 420px) 1fr; }
+    @media (max-width: 900px) {
+      body { grid-template-columns: 1fr; grid-template-rows: auto 55vh; }
+    }
+    header.app { padding: 22px 22px 8px; }
+    header.app h1 { margin: 0; font-size: 22px; letter-spacing: 0.04em; font-weight: 650; }
+    header.app p { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
+    .panel { background: var(--bg-2); border-right: 1px solid var(--line); overflow: auto; height: 100vh; }
+    @media (max-width: 900px) { .panel { height: auto; max-height: 50vh; border-right: 0; border-bottom: 1px solid var(--line); } }
+    .steps { display: flex; gap: 6px; padding: 0 22px 12px; }
+    .step-dot { flex: 1; height: 4px; border-radius: 4px; background: #3a323c; }
+    .step-dot.on { background: var(--accent); }
+    .step-dot.done { background: var(--accent-2); }
+    .card { padding: 8px 22px 22px; }
+    h2 { font-size: 15px; margin: 0 0 12px; font-weight: 600; }
+    .grid { display: grid; gap: 10px; }
+    .toy {
+      display: grid; grid-template-columns: 52px 1fr auto; gap: 12px; align-items: center;
+      background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; cursor: pointer;
+    }
+    .toy:hover { border-color: #5a4c56; }
+    .toy.selected { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+    .toy .icon { width: 40px; height: 40px; border-radius: 10px; background: #2c242c; display: grid; place-items: center; font-size: 20px; }
+    .toy b { display: block; font-size: 14px; }
+    .toy span { color: var(--muted); font-size: 12px; }
+    .badge { font-size: 11px; color: var(--accent); border: 1px solid #6a4038; padding: 2px 7px; border-radius: 999px; }
+    label.row { display: grid; grid-template-columns: 1fr auto; gap: 8px; font-size: 13px; color: var(--muted); margin-top: 12px; }
+    input[type=range] { width: 100%; accent-color: var(--accent); }
+    .presets { display: flex; gap: 8px; flex-wrap: wrap; }
+    button, .btn { appearance: none; border: 0; border-radius: 10px; padding: 10px 14px; cursor: pointer; font-weight: 600; }
+    .preset { background: var(--panel); color: var(--text); border: 1px solid var(--line); }
+    .preset.on { border-color: var(--accent); color: var(--accent); }
+    .nav { display: flex; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
+    .primary { background: linear-gradient(180deg, #e49a7a, #c45c7a); color: #1a1012; }
+    .ghost { background: transparent; color: var(--text); border: 1px solid var(--line); }
+    .warnbox, .okbox, .badbox {
+      border-radius: 12px; padding: 12px 14px; font-size: 13px; margin-top: 14px; line-height: 1.4;
+    }
+    .warnbox { background: #2a2318; border: 1px solid #5a4a28; color: #f0d9a8; }
+    .okbox { background: #17241c; border: 1px solid #2f5a3c; color: #c8e6ce; }
+    .badbox { background: #2a1718; border: 1px solid #5a2a2c; color: #f0c0c0; }
+    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+    .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+    .stat b { display: block; font-size: 16px; word-break: break-word; }
+    .stat span { color: var(--muted); font-size: 12px; }
+    #view { position: relative; background:
+      radial-gradient(1200px 500px at 70% 10%, #2a1c24 0%, transparent 50%),
+      radial-gradient(circle at 50% 80%, #1a1418, #0c0a0c); }
+    canvas { display: block; width: 100%; height: 100%; }
+    .hud {
+      position: absolute; left: 16px; bottom: 16px; right: 16px;
+      display: flex; justify-content: space-between; gap: 12px; align-items: end; pointer-events: none;
+    }
+    .hud .note { color: var(--muted); font-size: 12px; max-width: 460px; }
+    .checks { display: grid; gap: 8px; margin-top: 10px; }
+    .checks label { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: var(--muted); }
+    .dims { font-variant-numeric: tabular-nums; color: var(--text); }
+  </style>
+</head>
+<body>
+  <aside class="panel">
+    <header class="app">
+      <h1>GIVRE</h1>
+      <p>Solid print or two-part ice mold. Export STL for Bambu Studio.</p>
+    </header>
+    <div class="steps">
+      <div class="step-dot" id="d0"></div>
+      <div class="step-dot" id="d1"></div>
+      <div class="step-dot" id="d2"></div>
+      <div class="step-dot" id="d3"></div>
+    </div>
+    <div class="card" id="wizard"></div>
+  </aside>
+  <section id="view">
+    <div class="hud">
+      <div class="note" id="hudNote">Drag to orbit · scroll to zoom · millimeters.</div>
+      <div class="dims" id="hudDims"></div>
+    </div>
+  </section>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.1/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.1/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="app.js"></script>
+
+</body>
+</html>
