@@ -2,9 +2,19 @@
 
 Parametric adult toy configurator. Pick a shape, set size in millimetres, export an STL for [Bambu Studio](https://bambulab.com/en/download/studio).
 
-**Live app:** [hilsbos.github.io/givre](https://hilsbos.github.io/givre/)
+**Live app (after Pages is enabled):** [hilsbos.github.io/givre](https://hilsbos.github.io/givre/)
 
 *Givre* is French for frost. The ice mold is a two-part clamshell, not a one-piece inverse — a plug bulb is wider than its neck, so a rigid single cavity would lock the ice inside.
+
+## Enable GitHub Pages
+
+The deploy workflow is already in `.github/workflows/pages.yml`. GitHub will not publish until Pages is switched on once:
+
+1. Open [Settings → Pages](https://github.com/hilsbos/givre/settings/pages).
+2. Under **Build and deployment → Source**, choose **GitHub Actions**.
+3. Re-run the failed *Deploy GitHub Pages* workflow, or push any commit.
+
+Alternatively set Source to **Deploy from a branch**, branch `main`, folder `/ (root)`.
 
 ## What it makes
 
@@ -19,12 +29,12 @@ Anal mode will not let the flared base shrink below a retrieval-safe margin rela
 
 ## Use
 
-1. Open the [app](https://hilsbos.github.io/givre/) (or this `index.html` locally).
+1. Open the live app or `index.html` locally (needs `app.js` next to it).
 2. Choose **Solid toy** or **Ice mold**.
 3. Pick a shape and a size preset, then fine-tune.
 4. Download the STL. Import it in Bambu Studio and slice there — this site does not emit a `.gcode.3mf`.
 
-The preview loads Three.js from a CDN. After the first load you can keep using it; nothing is uploaded.
+The preview loads Three.js from a CDN. Nothing you design is uploaded.
 
 ## Print notes
 
@@ -38,17 +48,6 @@ The preview loads Three.js from a CDN. After the first load you can keep using i
 - An all-ice flare can melt and get lost internally. Keep the printed handle.
 - Ice can freeze to skin and crack into edges. Wait until the surface is wet.
 - This is geometry, not a medical device.
-
-## Repo
-
-Single-page app. No build step.
-
-```
-index.html      configurator (Three.js + generated STL)
-README.md       this file
-LICENSE         MIT
-.github/workflows/pages.yml
-```
 
 ## License
 
